@@ -3,5 +3,12 @@ __pycache__/
 venv/
 env/
 
-# Model pickles exceed GitHub's 100MB blob limit; regenerate via pipelines.
+# Generated experiment outputs (metrics, figures, SHAP/TRDP exports). Reproduce via pipelines/.
+artifacts/
+
+# Case-level TRDP text/json outputs produced by CLI scripts.
+trdp/outputs/
+
+# Model checkpoints exceed GitHub blob limits; regenerate via pipelines/models/.
 *.pkl
+*.pth
