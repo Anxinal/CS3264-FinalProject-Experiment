@@ -16,10 +16,20 @@ This report summarizes the current implementation status of the two-stage guided
 
 ## Repository policy (GitHub)
 
-To keep pushes reliable under GitHub limits:
+What we keep in the remote repository:
 
-- `*.pkl` sklearn model dumps are **not tracked** (each guided-RF pickle was ~270MB, above the 100MB blob limit). Regenerate models by running `pipelines/experiments/guided_trdp/run_guided_trdp_experiment.py` locally; metrics remain in `artifacts/explanations/**` as CSV/JSON/Markdown.
-- `*.npz` and `*.npy` are stored with **Git LFS** (`.gitattributes`) so large processed arrays stay out of normal Git packs.
+- **Raw inputs**: `ChCh-Miner_durgbank-chem-chem.tsv/`, `drug_smiles.json`
+- **Processed dataset tensors** (LFS): `data/processed/*.npz` and `data/processed/*.npy` (fingerprints, pair samples, train/val/test splits)
+- **Reference table**: `MACCS_Keys_Human_Readable_Reference(1).xlsx`
+- **Source code** under `pipelines/`, `trdp/`, `project_paths.py`, report sources, etc.
+
+What we **do not** push (teammates regenerate locally):
+
+- **`artifacts/`** (metrics JSON, figures, SHAP plots, guided-TRDP CSV/JSON, legacy copies)
+- **`trdp/outputs/`** (case-level TRDP text/json from CLI runs)
+- **`*.pkl` / `*.pth`** model checkpoints (see `.gitignore`)
+
+Large arrays use **Git LFS** via `.gitattributes` (`*.npy`, `*.npz`).
 
 ---
 
