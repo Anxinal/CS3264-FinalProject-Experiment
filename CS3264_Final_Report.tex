@@ -1,0 +1,360 @@
+\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
+\usepackage[submission]{aaai2026}  % DO NOT CHANGE THIS
+\usepackage{times}  % DO NOT CHANGE THIS
+\usepackage{helvet}  % DO NOT CHANGE THIS
+\usepackage{courier}  % DO NOT CHANGE THIS
+\usepackage[hyphens]{url}  % DO NOT CHANGE THIS
+\usepackage{graphicx} % DO NOT CHANGE THIS
+\urlstyle{rm} % DO NOT CHANGE THIS
+\def\UrlFont{\rm}  % DO NOT CHANGE THIS
+\usepackage{natbib}  % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
+\usepackage{caption} % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\frenchspacing  % DO NOT CHANGE THIS
+\setlength{\pdfpagewidth}{8.5in} % DO NOT CHANGE THIS
+\setlength{\pdfpageheight}{11in} % DO NOT CHANGE THIS
+%
+% These are recommended to typeset algorithms but not required. See the subsubsection on algorithms. Remove them if you don't have algorithms in your paper.
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+%
+% These are are recommended to typeset listings but not required. See the subsubsection on listing. Remove this block if you don't have listings in your paper.
+\usepackage{newfloat}
+\usepackage{listings}
+\DeclareCaptionStyle{ruled}{labelfont=normalfont,labelsep=colon,strut=off} % DO NOT CHANGE THIS
+\lstset{%
+	basicstyle={\footnotesize\ttfamily},% footnotesize acceptable for monospace
+	numbers=left,numberstyle=\footnotesize,xleftmargin=2em,% show line numbers, remove this entire line if you don't want the numbers.
+	aboveskip=0pt,belowskip=0pt,%
+	showstringspaces=false,tabsize=2,breaklines=true}
+\floatstyle{ruled}
+\newfloat{listing}{tb}{lst}{}
+\floatname{listing}{Listing}
+%
+% Keep the \pdfinfo as shown here. There's no need
+% for you to add the /Title and /Author tags.
+\pdfinfo{
+/TemplateVersion (2026.1)
+}
+
+\setcounter{secnumdepth}{0} %May be changed to 1 or 2 if section numbers are desired.
+
+% Title
+\title{Interpretable Machine Learning for Predicting Adverse Drug Interactions in Singapore}
+\author{
+    % Authors - Replace with actual names
+    An Xiao\textsuperscript{\rm 1},
+    Liu Lexi\textsuperscript{\rm 2},
+    Zhou Zirun\textsuperscript{\rm 3}
+}
+\affiliations{
+    % Affiliations
+    \textsuperscript{\rm 1}School of Computing, National University of Singapore\\
+    student1@nus.edu.sg, student2@nus.edu.sg, student3@nus.edu.sg
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Polypharmacy is a growing concern in Singapore's ageing population, substantially increasing the risk of adverse drug-drug interactions (DDIs). We apply three interpretable machine learning models---Logistic Regression, MLP, and Random Forest---to binary DDI prediction using MACCS molecular fingerprints derived from the BIOSNAP ChChMiner dataset. Random Forest achieves the strongest predictive performance and supports transparent, clinician-readable explanations via tree-ranked decision paths, making it well-suited for clinical decision support in the Singapore context.
+\end{abstract}
+
+\section{Introduction}
+
+The rapid advancement of healthcare systems and increased life expectancy have led to a growing prevalence of polypharmacy, where patients—particularly elderly individuals—are prescribed multiple medications simultaneously. While such multi-drug therapies are often necessary for managing chronic conditions, they significantly increase the risk of drug-drug interactions (DDIs). Statistics show that DDIs may greatly contribute to a worsening patient condition through adverse side effects.\cite{Chan2016:chan}, and the risk of DDIs is underperceived by the medical industry.\cite{polypharmacy}
+
+DDI is especially critical in Singapore.\cite{Ho2023} Given that there is a vacuum in reliable formal methods among Singaporean doctors to avoid drug interactions, we propose to leverage machine learning algorithms to provide explainable advice to Singaporean doctors on possible drug interactions for every prescription. We first show that drug interaction is an important issue that can be properly addressed through machine learning algorithm under Singaporean context. We will then expound on the further details in our choice of the machine learning algorithm and its training process. Last but not the least, we will demonstrate the result of our prototypical machine learning application and how it benefits Singapore's medical industry through providing explainable advice on potential drug interactions in prescriptions.
+
+
+\section{Motivation}
+
+\subsection{Drug interactions as a severe issue in Singapore}
+
+DDI has been recognised as a significant contributor to the degeneration of patient health.\cite{polypharmacy,Chan2016:chan}. The complexity of managing multiple medications increases the likelihood of unintended interactions, making it crucial for healthcare providers to have effective tools for predicting and preventing DDIs.
+
+Singapore presents a particularly important context for addressing this problem. First, the country's demographic structure is shifting toward an ageing society, with a high proportion of elderly individuals requiring long-term medication.\cite{singstat_population_2025} Figure 1 shows our rough estimate of the elderly population in Singapore based on the age distribution of the population and the stratified death rate of different age groups\cite{singstat_death_rate_2025} in Singapore in 2025. A sharp increase in the demand of polypharmacy is therefore expected.\cite{Ho2023,Wong2019} 
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\columnwidth]{./population.png}
+    \caption{Predicted elderly Population(above 60) of Singapore in 2025.}
+    \label{fig:population_pyramid}
+\end{figure}
+
+Second, Singapore exhibits a unique disease profile, with high rates of metabolic and cardiovascular conditions, which often necessitate multi-drug treatment plans.\cite{hop_health_concerns_2025} 
+
+\subsection{Why machine learning algorithms}
+
+Machine learning has been effective in detecting patterns of drug interactions as it can be categorised as a classification task.\cite{Gheorghita2025} When the number of drugs involved in a single prescription increase, we expect the number of possible pair of drugs that may produce interaction to increase exponentially($N =$ $n\choose2$, n is the number of drugs and N is the number of possible pairs), which eventually leads to human oversight. 
+
+Even though there are available databases nowadays where doctors can use for reference. Machine learning algorithm further enhances drug interaction detection as it is able to predict the reaction purely through the chemical structure of the drugs. This capability is relevant to Singapore context as most of the databases are constructed through sources from Western countries, where some prescriptions more commonly utilised in Singapore may be unavailable because of different disease profiles.
+
+We can further leverage the strengths of interpretable ML models—such as their ability to provide human-understandable decision rules and feature contributions—to ensure that medical professionals can trust and effectively utilise the model's predictions. More details will be explored in the solution section.
+
+\subsection{Ethical considerations}
+
+While the previous sections mention the advantages of using machine learning algorithms to detect drug interactions, we also acknowledge the important ethical considerations as the healthcare industry typically involves high-stake responsibilities where many believe that human decisions must be involved. Drug prescription is no exception. 
+
+First, any misjudgement by the algorithm must be held accountable. The machine learning algorithm can never make any independent judgement on its own without human oversight. The patient, who are unable to judge the accuracy of the predicted drug interaction result, should also not be exposed to the decision making process. Therefore, we envision the algorithm to be most ethically positioned as advisory to the doctors, with which the doctor gives the final decision on whether the drug interaction may actually happen and be held accountable for his own judgement as a medical professional.
+
+\section{Method}
+
+We first define the input and the output of our machine learning model. The input is a pair of drug molecular fingerprints, and the output is the predicted probability of an adverse interaction between the two drugs.
+We mathematically express our model as follows:
+
+\begin{equation}
+    \hat{y} = F(D_A, D_B), \hat{y} \in [0, 1]
+\end{equation}
+
+where $D_A, D_B \in \mathbb{R}^{d}$ are the molecular fingerprints of Drug A and Drug B with dimension $d$, respectively. The function $F$ represents the machine learning model that produces a prediction $\hat{y}$ indicating the probability of an interaction. In our experiment, we use random forest as our primary machine learning model, which will be further explained in the next section.
+
+Then with the output possibility $\hat{y}$, we can further apply a threshold $\delta$ to determine whether the drug pair is predicted to interact or not. For example, if $\hat{y} > \delta$, we can classify the drug pair as interacting; otherwise, we classify it as non-interacting. After interacting pairs are identified, we can further provide an explanation of the interaction through the interpretable machine learning model, which will be discussed in the next section.
+
+
+\subsection{Datasets and Data Structures}
+
+\subsubsection{Data Source}
+\ 
+\newline
+For drug interactions, we use the \textbf{BIOSNAP ChChMiner} dataset, which is derived from DrugBank and contains experimentally validated drug-drug interaction (DDI) pairs. Each entry in the raw dataset consists of two DrugBank IDs indicating that the pair of drugs is known to interact and should not be used together. After filtering out drug pairs for which molecular structures could not be retrieved, our dataset contains approximately 40,000 positive examples (interacting pairs). 
+
+Since BIOSNAP contains only known positive drug-drug interactions (DDIs), negative examples must be constructed. Following standard practice, we randomly sample drug pairs absent from the positive set, or drug pairs with identical drugs at a 1:1 ratio, under two assumptions: a drug does not interact with itself, and any pair not listed in DrugBank is treated as non-interacting. While the latter assumption may exclude undiscovered interactions, this open-world limitation is well-recognised in DDI benchmarking and consistent with prior work
+
+\subsection{Input construction}
+
+\subsubsection{Drug Interaction Pairs}
+\
+\newline
+Each drug is represented as a 166-dimensional MACCS Keys (Molecular ACCess System) binary fingerprint \cite{rdkit}, encoding the presence or absence of predefined chemical substructures (e.g., Key 158 = carbon–nitrogen single bond). MACCS Keys are widely adopted in pharmaceutical research \cite{xie2020improvement,durant2002reoptimization} and, unlike Morgan fingerprints, each bit maps to a named, chemically interpretable substructure, directly supporting our interpretability analysis. 
+
+The model learns to predict the interaction label based on the combined features of the two drugs.However, to study the pair of drugs as the input, we need to combine their molecular fingerprints into a single vector. In other words, 
+\begin{center}$x = g(D_A, D_B)$
+\end{center}
+where $g$ is the function that combines the two drug fingerprints into a single input vector.
+
+The function $g$ should satisfy two properties.
+
+First, it should be \textbf{symmetric}, or $g(D_A, D_B) = g(D_B, D_A)$
+
+Second, the function should \textbf{preserve the interpretability of the features}, allowing us to understand which chemical substructures contribute to the predicted interaction.
+There are several possible ways to combine the two drug fingerprints, such as concatenation, element-wise multiplication, or addition. We choose to use addition for its simplicity and interpretability. With element wise addition, the input vector for a drug pair is represented as:
+
+\begin{equation}
+    x_i = \begin{cases}
+        0 & \text{if neither drug has the substructure} \\
+        1 & \text{if exactly one drug has the substructure} \\
+        2 & \text{if both drugs have the substructure} 
+        \end{cases}
+\end{equation}
+
+where $x_i$ is the $i$-th dimension of the input vector, corresponding to the $i$-th MACCS key. 
+
+We also removed zero bits (chemical structures universally absent across our dataset), which reduces the effective dimensionality from 166 to $x$. This is necessary because zero bits do not contribute to the model's decision and may introduce noise, while also improving computational efficiency. Removing zero bits also enhances the interpretability of the model by focusing on the relevant chemical features. For instance, Key 2 is interpreted as ``Contains an atom with atomic number $\geq$ 104 (e.g.\ Rutherfordium),'' which is very unlikely to be present in any drug molecule and can be safely removed without losing any predictive information.
+
+\subsection{Algorithm and models}
+We decided to leverage random forest as the major model for prediction and explanation. Random forest is a powerful ensemble learning method that combines multiple decision trees to improve predictive performance and control overfitting. It is particularly well-suited for our task due to its ability to handle high-dimensional, sparse input data (like molecular fingerprints) and its inherent interpretability through feature importance measures and decision paths.
+
+\subsubsection{Logistic Regression}
+\
+\newline
+Logistic Regression is our linear baseline, operating on the 324-dimensional concatenated drug-pair fingerprint. It provides a lower bound on performance and quantifies the benefit of non-linear models for this task.
+
+\subsubsection{Multi-Layer Perceptrons (MLP)}
+\ 
+\newline
+Intuitively, MLP with logistic output layer is a natural choice for this task, as it can capture complex, non-linear relationships in a binary classification setting such as drug interactions.
+\paragraph{Why non-linearity is necessary.}
+Consider a simplified scenario with only two chemical substructures $x_1, x_2 \in \{0,1,2\}$, where the value encodes how many drugs in the pair contain that substructure (Figure~\ref{fig:decision_boundary}). Suppose an adverse interaction occurs precisely when both chemicals are present across the drug pair, i.e., the true label is $y=1$ iff $x_1 \geq 1$ \emph{and} $x_2 \geq 1$. The four interacting pairs (circled) occupy the upper-right region of the grid, while the non-interacting pairs lie along the axes.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.95\columnwidth]{./MLP.png}
+    \caption{A simple example of learning drug interactions with only two types of chemicals involved.}
+    \label{fig:decision_boundary}
+\end{figure}
+
+The particular relationship presented in the figure cannot be captured through naive logistic regression without any feature transformation since the size of input instance space $|X| = 9$ while $VC(H) = 3 < 9$ when the hypothesis space is expressed as a linear decision boundary $w_1 x_1 + w_2 x_2 > b$. On the other hand, through the universal approximation theorem, MLP allows any polynomial continuous functions to be accurately approximated with sufficient number of neurons.
+
+However, a major limitation of MLP algorithm is its difficulty in providing an interpretable explanation to the doctor when advising possible drug interactions. First, the MLP learns the true function through universal approximation theorem which makes it impossible to recover the true function itself. Second, given that chemical reactions take place independently, MLP conflates all chemical reactions in one single hypothesis which makes it difficult to retrieve the separate reactions that may take place between two drugs.
+
+\subsubsection{Random Forest}
+\
+\newline
+Random Forest, introduced by \citet{Breiman2001}, is a non-parametric ensemble method that combines the predictions of $T$ independently trained decision trees to reduce variance while retaining the low bias of individual trees. Each tree $\mathcal{T}_t$ ($t = 1, \ldots, T$) is trained on a bootstrap resample $\mathcal{D}_t \sim \text{Bootstrap}(\mathcal{D})$ drawn \emph{with replacement} from the full training set $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^{n}$, where $\mathbf{x}_i \in \mathbb{R}^{p}$ and $y_i \in \{0, 1\}$.
+ 
+\paragraph{Tree Construction via CART.}
+Each tree is grown using CART splits on Gini impurity \cite{Breiman1984}.
+
+\paragraph{Ensemble Prediction.}
+Given $T$ fitted trees, the predicted interaction probability for a drug pair $\mathbf{x}$ is the average of the per-tree leaf class probabilities:
+\begin{equation}
+    \hat{y} = F(\mathbf{x}) = \frac{1}{T} \sum_{t=1}^{T} \hat{p}_t(\mathbf{x}),
+    \label{eq:rf_pred}
+\end{equation}
+where $\hat{p}_t(\mathbf{x})$ is the fraction of positive training samples in the leaf node of tree $\mathcal{T}_t$ that $\mathbf{x}$ falls into. A binary prediction is obtained by thresholding $\hat{y}$ against a chosen operating point $\delta$:
+
+\paragraph{Applicability to This Task.}
+Several properties of the DDI task make Random Forest a principled model choice.
+ 
+\textit{(i) Ordinal feature space.} Our combined drug-pair fingerprint $\mathbf{x} \in \{0, 1, 2\}^{p}$ arises from element-wise addition of two MACCS binary vectors. Each coordinate takes one of three ordinal integer values, and CART splits of the form $x_j \leq \tau$ partition this space without requiring any normalisation or distributional assumption, which is particularly important for chemical fingerprint data \cite{Svetnik2003}.
+ 
+\textit{(ii) Accurate capturing of potential drug interactions through decision boundaries.} CART naturally encodes conjunctive rules: a single path from root to leaf can represent conditions such as  $x_k, x_r \geq 1$ (Both drugs together contain chemicals represented by index $k$ or $r$ that may interact with each other). Moreover, given that drug interaction mechanisms can operate through largely independent biological pathways, the decorrelated, parallel trees from the random forest are theoretically well-suited to this domain. In fact, Random forests have been shown to be effective for DDI prediction on molecular fingerprints in several prior studies\cite{Gottlieb2012,Vilar2012,Ryu2018}.
+ 
+\paragraph{Why not gradient boosting?}
+Gradient boosting is a strong alternative for tabular DDI prediction \cite{Ryu2018}, but its sequential tree construction means each tree models \emph{residuals} of the prior ensemble rather than the original labels. This makes individual tree paths uninterpretable in isolation, undermining our TRDP strategy which relies on each tree being an independent, self-contained classifier whose decision path is directly readable as a conjunctive rule.
+
+\subsubsection{Interpretable Random Forest}
+\
+\newline
+We proposed two possible strategies for interpreting a random forest's prediction: (1) aggregate feature importance across the entire ensemble(SHAP explainer), or (2) examine the decision paths of individual trees, as a more naive but potentially more interpretable alternative.
+
+\subsubsection{SHAP Feature Attribution.}
+SHAP TreeExplainer \cite{Lundberg2020} produces a continuous attribution score $\phi_j$ per feature, satisfying the Shapley axioms (efficiency, symmetry, and null player), which guarantee that the attributions are \emph{faithful} to the ensemble's overall prediction.
+
+\subsubsection{TRDP: Tree-Ranked Decision Path Output}
+While SHAP provides a global feature importance ranking, it does not directly reveal the specific decision rules that led to the prediction. To address this, we propose a complementary method called \textbf{Tree-Ranked Decision Path Output (TRDP)}, which directly surfaces the most influential decision paths from the ensemble's constituent trees.
+
+TRDP \emph{rank all trees with positive votes directly} and, for each top-ranked tree, output its \emph{complete} root-to-leaf decision path.  A full path is a conjunction of conditions and is therefore directly interpretable by a clinician without further aggregation.
+ 
+\paragraph{Decision Path of a Single Tree.}
+For a test sample $\mathbf{x}$ and tree $\mathcal{T}_t$, define the
+\emph{decision path} as the ordered sequence of split conditions
+encountered from the root to the reached leaf:
+\begin{equation}
+    \Pi_t(\mathbf{x}) =
+    \bigl(c_1^{(t)},\; c_2^{(t)},\; \ldots,\; c_{d_t}^{(t)}\bigr),
+    \label{eq:path}
+\end{equation}
+where $d_t$ is the depth of the reached leaf and each $c_i^{(t)}$ is a human-readable condition from the decision tree.
+
+\paragraph{Ranking Positive Trees.}
+Only trees that individually voted for an interaction carry explanatory
+relevance for the positive prediction.  Define the set of
+\emph{positive-voting trees} as
+\begin{equation}
+    \mathcal{T}^{+}(\mathbf{x}) =
+    \bigl\{t \in \{1,\ldots,T\} : \hat{p}_t(\mathbf{x}) > 0.5\bigr\},
+    \label{eq:pos_trees}
+\end{equation}
+where $\hat{p}_t(\mathbf{x})$ is the fraction of positive training
+samples in the leaf of tree $\mathcal{T}_t$ reached by $\mathbf{x}$.
+The ensemble predicts a positive interaction when
+$|\mathcal{T}^{+}(\mathbf{x})| > T/2$, so $\mathcal{T}^{+}(\mathbf{x})$
+is guaranteed to be non-empty whenever $\tilde{y} = 1$.
+ 
+However, not all positive-voting trees are equally informative as explanations.
+A tree whose reached leaf contains 95\% positive training samples made
+a highly decisive vote; a tree at 51\% barely cleared the threshold and
+its path reflects a weakly discriminative rule.  We rank trees by their
+\emph{leaf confidence}, defined as
+\begin{equation}
+    \psi(t, \mathbf{x}) = \hat{p}_t(\mathbf{x}),
+    \label{eq:tree_score}
+\end{equation}
+and sort $\mathcal{T}^{+}(\mathbf{x})$ in descending order of
+$\psi(t, \mathbf{x})$.  The top-$K$ trees in this ranking,
+\begin{equation}
+    \mathcal{T}^{*}(\mathbf{x}) =
+    \operatorname*{arg\,top\text{-}K}_{t\;\in\;\mathcal{T}^{+}(\mathbf{x})}
+    \;\psi(t, \mathbf{x}),
+    \label{eq:top_k}
+\end{equation}
+are selected as the explanation representatives.
+A natural default is $K = 1$ (the single most confident positive-voting
+tree), which produces a minimal, easily communicated rule.
+Setting $K > 1$ surfaces alternative rule sets that independently
+support the prediction, giving the clinician a sense of how
+structurally diverse the forest's reasoning is.
+ 
+For each tree $t \in \mathcal{T}^{*}(\mathbf{x})$, ranked by confidence,
+we output the complete decision path $\Pi_t(\mathbf{x})$ as an ordered
+list of $d_t$ human-readable conditions.  For example, the top-ranked
+tree's explanation might read:
+\begin{quote}
+\emph{Tree rank 1 (leaf confidence $= 0.94$):}\\
+\emph{[Node 1]\; Key 99 $= 1$\;
+$\Rightarrow$ At least one drug contains a carbon–carbon double bond}\\
+\emph{[Node 2]\; Key 148 $= 2$\;
+$\Rightarrow$ both drugs contain Heteroatom bonded to three other atoms.}\\
+\emph{$\Rightarrow$ \textbf{Predicted: Interaction.}}
+\end{quote}
+
+This format is structurally analogous to a clinical decision rule, a format already familiar to medical professionals \cite{Rudin2019}. Each node corresponds to a testable chemical property; taken together, the conjunction of decision tree paths constitutes a complete, falsifiable hypothesis about why the interaction is predicted.
+
+\paragraph{Discussion}
+TRDP offers a complementary practical benefit for clinical deployment. SHAP outputs a vector of real-valued attribution scores, which must be further interpreted by the clinician to form an actionable hypothesis. In contrast, each TRDP path is a conjunction of discrete, testable conditions (e.g., ``both drugs contain a carboxyl group \emph{and} at least one contains a benzene ring''), mirroring the if-then decision rules already used in clinical practice \cite{Rudin2019}. This makes TRDP explanations immediately actionable without post-hoc interpretation.
+
+
+In our evaluation, we cross-validate TRDP outputs against SHAP feature attributions: for each test prediction, we verify that the features appearing in the top-$K$ TRDP paths substantially overlap with the highest-$|\phi_j|$ SHAP features, providing empirical evidence that the selected paths are not outlier artefacts of individual bootstrap samples.
+
+\paragraph{limitation and improvement} 
+
+A practical limitation of TRDP is path length: with fully grown trees, decision paths can exceed 20 conditions, reducing readability. To mitigate this, we first limit the maximum depth of each tree to a reasonable value. 
+
+We also note that the sparsity of MACCS fingerprints poses a structural challenge for TRDP. For a reaction mechanism involving $r$ salient features, we require all $r$ features to appear consecutively at the top of at least one decision tree for the explanation to be maximally interpretable. Assuming $m$ features are sampled uniformly at each split (with replacement for simplicity), with $n$ trees trained in total, the probability $p$ that at least one tree places all $r$ features at the top of its decision path is:
+\begin{equation}
+   p = 1 - \left(1 - r! \left(\frac{m}{d}\right)^{r}\right)^{n}
+\end{equation}
+where $d$ is the total number of features after zero-bit removal. With $m = 12$, $n = 100$, and $d = 164$, we obtain $p \approx 0.66$ for $r = 2$ and $p \approx 0.20$ for $r = 3$. This shows that TRDP's ability to surface complete interaction rules degrades rapidly as the number of contributing features grows.
+
+To mitigate this, we propose a two-stage approach: first train a preliminary random forest with uniform feature sampling and compute SHAP feature attributions, then use the resulting importance scores as sampling weights when constructing a second forest. Features with higher SHAP importance are more likely to be selected at each split, increasing the probability that genuinely relevant features co-occur in the same decision path. This directly improves TRDP reliability while preserving stochasticity in feature selection, since low-importance features retain non-zero sampling probability. We acknowledge that SHAP importances derived from the first-stage forest may reflect dataset-specific biases, potentially limiting the second-stage model's ability to genralise to novel drug pairs whose interactions depend on features underrepresented in the training data.
+
+\section{Experiment Process}
+
+\subsection{Dataset splits}
+\ 
+\newline
+The final dataset is split into training, validation, and test sets at an 80/10/10 ratio, with stratification to preserve the class balance across all splits.
+\subsection{MLP}
+% TODO: Add experimental details and results.
+Our Multi-Layer Perceptron consists of three fully-connected hidden layers with ReLU activations and dropout regularisation:
+
+\begin{center}
+    $162 \rightarrow 162 \rightarrow 128 \rightarrow 64 \rightarrow 1$
+\end{center}
+Dropout with probability 0.3 is applied after each of the first two hidden layers to reduce overfitting. The output layer uses a sigmoid activation to produce an interaction probability. The model is trained with the Adam optimiser (learning rate $10^{-3}$) and binary cross-entropy loss for 50 epochs, with the best checkpoint selected based on validation AUC-ROC.
+
+\subsection{Random Forest}
+ In our experiments, we train a forest of $T = 100$ trees using the \texttt{sklearn} defaults: $m = \lfloor\sqrt{p}\rfloor$. We limit the tree depth to 5 to ensure interpretabiity of individual trees, and minimum samples per leaf of 1.
+
+\section{Results}
+% TODO: Add experimental details and results.
+\subsection{Prediciive performance}
+We used the confusion matrix as our major evaluation metric to evaluate the performance of our model. The confusion matrix is a 2x2 table that summarises the performance of a classification model by showing the counts of true positives (TP), true negatives (TN), false positives (FP), and false negatives (FN). The predicitive accuracy is measured in the validation set. 
+%TODO: Result for the following: MLP /logistics/ Random forest/ with diffent hyperparameters(max depth = 3/5/10/20 and number of trees = 50/100/200)
+
+\subsection{Interpretability}
+We evaluate the interpretability of our model through two complementary approaches: (1) qualitative analysis of TRDP explanations, and (2) quantitative correlation between TRDP-selected features and SHAP attributions.
+
+%TODO: Implement the random forest such that it uses shap and trdp separately. The experiment result, instead of being the accuracy score, should be an output result between the drug name(if possible), prediction result, explanation(if positive) A sample explanation is seen on the section: interpretable random forest. Also, compare the two different possible explanations provided by SHAP and TRDP and make an evaluation in how they differ and which one is better in the context of interpretability %
+
+\subsection{evaluation}
+\subsection{limitatiions}
+\section{Conclusion and Future Work}
+\bibliography{CS3264_Final_Report}
+\section{Appendix A: MACCS Key to interpretation table}
+The original MACCS Keys consist of 166 bits, each corresponding to a specific chemical substructure. The interpretation of each key was uploaded in the following link. We have converted the chemical substructure into a more human-readable format, which is shown in the link below The table also includes the original MACCS key number for reference.
+
+\textbf{Oringinal MACCS Keys}: \url{https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/MACCSkeys.py}
+
+\textbf{Human-readable MACCS Keys}: \url{https://github.com/Anxinal/CS3264-Final-Report.git}
+
+\section{Appendix B: Experiment Repository}
+The experiment code and data processing scripts are available in the following GitHub repository: 
+
+\url{https://github.com/Anxinal/CS3264-Final-Report.git}
+
+\section{Appendix C: Group Member Contributions}
+\begin{itemize}
+    \item Member 1 An Xiao: 
+    \item Member 2 Liu Lexi: 
+    \item Member 3 Zhou Zirun: 
+\end{itemize}
+
+\end{document}

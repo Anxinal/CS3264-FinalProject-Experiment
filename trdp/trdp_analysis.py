@@ -2,8 +2,12 @@ import argparse
 import json
 import pickle
 from pathlib import Path
+import sys
 
 import numpy as np
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from project_paths import EXPLANATIONS_DIR, RF_MODEL_PKL, X_TEST_NPY, Y_TEST_NPY
 
 
 def build_feature_names(n_features: int) -> list[str]:
@@ -112,25 +116,25 @@ def parse_args():
     parser.add_argument(
         "--model-path",
         type=str,
-        default="../rf_model.pkl",
+        default=str(RF_MODEL_PKL),
         help="Path to trained Random Forest pickle file.",
     )
     parser.add_argument(
         "--x-path",
         type=str,
-        default="../X_test.npy",
+        default=str(X_TEST_NPY),
         help="Path to feature matrix (NumPy .npy).",
     )
     parser.add_argument(
         "--y-path",
         type=str,
-        default="../y_test.npy",
+        default=str(Y_TEST_NPY),
         help="Path to labels (NumPy .npy).",
     )
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="./outputs",
+        default=str(EXPLANATIONS_DIR / "trdp"),
         help="Directory for generated TRDP output files.",
     )
     parser.add_argument(

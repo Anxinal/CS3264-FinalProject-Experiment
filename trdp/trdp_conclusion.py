@@ -1,6 +1,10 @@
 import argparse
 import json
 from pathlib import Path
+import sys
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from project_paths import EXPLANATIONS_DIR
 
 
 def load_json(path: Path):
@@ -77,7 +81,7 @@ def parse_args():
     parser.add_argument(
         "--chain-json",
         type=str,
-        default="./outputs/trdp_chain_report.json",
+        default=str(EXPLANATIONS_DIR / "trdp" / "trdp_chain_report.json"),
         help="Path to trdp_chain_report.json",
     )
     parser.add_argument(
@@ -101,7 +105,7 @@ def parse_args():
     parser.add_argument(
         "--output-path",
         type=str,
-        default="./outputs/trdp_conclusion.txt",
+        default=str(EXPLANATIONS_DIR / "trdp" / "trdp_conclusion.txt"),
         help="Output text file path",
     )
     return parser.parse_args()

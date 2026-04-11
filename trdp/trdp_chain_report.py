@@ -2,10 +2,14 @@ import argparse
 import json
 import re
 from pathlib import Path
+import sys
 
 from rdkit.Chem import MACCSkeys
 from maccs_reference_loader import load_maccs_human_reference
 from substructure_text import smarts_to_human_text
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from project_paths import EXPLANATIONS_DIR, MACCS_REFERENCE_XLSX
 
 
 def load_trdp_json(path: Path):
@@ -202,25 +206,25 @@ def parse_args():
     parser.add_argument(
         "--trdp-json",
         type=str,
-        default="./outputs/trdp_explanations.json",
+        default=str(EXPLANATIONS_DIR / "trdp" / "trdp_explanations.json"),
         help="Path to TRDP explanations JSON.",
     )
     parser.add_argument(
         "--summary-json",
         type=str,
-        default="./outputs/trdp_summary.json",
+        default=str(EXPLANATIONS_DIR / "trdp" / "trdp_summary.json"),
         help="Path to TRDP summary JSON for feature-dimension metadata.",
     )
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="./outputs",
+        default=str(EXPLANATIONS_DIR / "trdp"),
         help="Output directory for chain reports.",
     )
     parser.add_argument(
         "--maccs-reference-xlsx",
         type=str,
-        default="../MACCS_Keys_Human_Readable_Reference(1).xlsx",
+        default=str(MACCS_REFERENCE_XLSX),
         help="Optional MACCS human-readable reference xlsx path.",
     )
     return parser.parse_args()

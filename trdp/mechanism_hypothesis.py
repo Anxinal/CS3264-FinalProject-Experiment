@@ -3,6 +3,7 @@ import json
 import pickle
 from itertools import combinations
 from pathlib import Path
+import sys
 
 import numpy as np
 import pandas as pd
@@ -14,6 +15,18 @@ from sklearn.feature_selection import VarianceThreshold
 from maccs_reference_loader import load_maccs_human_reference
 from trdp_analysis import build_feature_names, explain_sample
 from trdp_chain_report import condition_to_text, load_maccs_patterns
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from project_paths import (
+    DRUG_FINGERPRINTS_NPZ,
+    DRUG_SMILES_JSON,
+    EXPLANATIONS_DIR,
+    MACCS_REFERENCE_XLSX,
+    NEGATIVE_SAMPLES_NPZ,
+    POSITIVE_SAMPLES_NPZ,
+    RAW_DDI_TSV,
+    RF_MODEL_PKL,
+)
 
 
 def resolve_path(base_dir: Path, raw_path: str):
@@ -366,27 +379,27 @@ def parse_args():
     parser.add_argument("--drug-a-id", type=str, required=True)
     parser.add_argument("--drug-b-id", type=str, required=True)
     parser.add_argument("--top-k", type=int, default=3)
-    parser.add_argument("--model-path", type=str, default="../rf_model.pkl")
-    parser.add_argument("--fingerprints-path", type=str, default="../drug_fingerprints.npz")
-    parser.add_argument("--positive-samples-path", type=str, default="../positive_samples.npz")
-    parser.add_argument("--negative-samples-path", type=str, default="../negative_samples.npz")
-    parser.add_argument("--drug-smiles-path", type=str, default="../drug_smiles.json")
+    parser.add_argument("--model-path", type=str, default=str(RF_MODEL_PKL))
+    parser.add_argument("--fingerprints-path", type=str, default=str(DRUG_FINGERPRINTS_NPZ))
+    parser.add_argument("--positive-samples-path", type=str, default=str(POSITIVE_SAMPLES_NPZ))
+    parser.add_argument("--negative-samples-path", type=str, default=str(NEGATIVE_SAMPLES_NPZ))
+    parser.add_argument("--drug-smiles-path", type=str, default=str(DRUG_SMILES_JSON))
     parser.add_argument(
         "--biosnap-path",
         type=str,
-        default="../ChCh-Miner_durgbank-chem-chem.tsv/ChCh-Miner_durgbank-chem-chem.tsv",
+        default=str(RAW_DDI_TSV),
     )
     parser.add_argument(
         "--maccs-reference-xlsx",
         type=str,
-        default="../MACCS_Keys_Human_Readable_Reference(1).xlsx",
+        default=str(MACCS_REFERENCE_XLSX),
     )
     parser.add_argument(
         "--attention-hint-path",
         type=str,
         default="./knowledge/attention_feature_importance.json",
     )
-    parser.add_argument("--output-dir", type=str, default="./outputs")
+    parser.add_argument("--output-dir", type=str, default=str(EXPLANATIONS_DIR / "trdp"))
     return parser.parse_args()
 
 
