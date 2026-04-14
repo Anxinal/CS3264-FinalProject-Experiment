@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd.exe /c \"cd /d e:\\\\WorkSpave_python\\\\CS3264-Experiment\\\\DDI-term-project && python --version && python -c \"\"import numpy; print\\(''ok''\\)\"\"\")",
+      "Bash(cmd.exe /c \"python --version 2>&1\")",
+      "Bash(powershell.exe -Command \"python --version\")",
+      "Read(//c/Users/ax137//**)",
+      "Read(//c/ProgramData/**)",
+      "Read(//e//**)",
+      "Read(//e/WorkSpave_python//**)",
+      "Read(//e/Users/ax137/anaconda3/envs//**)",
+      "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe --version)",
+      "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe -c \"import numpy, sklearn, shap; print\\(''all ok''\\)\")",
+      "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe pipelines/experiments/run_comparative_analysis.py)",
+      "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe -c \":*)",
+      "Bash(/e/texlive/2026/bin/windows/pdflatex -interaction=nonstopmode CS3264_Final_Report.tex)"
+    ]
+  }
+}

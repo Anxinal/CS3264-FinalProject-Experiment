@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /e/WorkSpave_python/CS3264-Experiment/DDI-term-project -type d -not -path */.git*)",
+      "Bash(python -c \"import numpy as np; X = np.load\\(''data/processed/X_train.npy''\\); print\\(''X_train shape:'', X.shape\\); y = np.load\\(''data/processed/y_train.npy''\\); print\\(''y_train shape:'', y.shape\\)\")",
+      "Bash(python -c \"import numpy as np; X = np.load\\(''data/processed/X_train.npy''\\); print\\(''X_train shape:'', X.shape\\)\")",
+      "Bash(where python:*)",
+      "Bash(where conda:*)",
+      "Bash(conda activate:*)",
+      "Bash(C:msys64ucrt64binpython.exe -c \"import numpy; print\\(numpy.__version__\\)\")",
+      "Read(//c/msys64/ucrt64/bin/**)",
+      "Read(//c/Users/ax137//**)",
+      "Bash(/c/msys64/ucrt64/bin/python.exe -c \"import numpy; print\\(numpy.__version__\\)\")",
+      "Bash(ls /c/Users/ax137/miniconda3/bin/python*)",
+      "Bash(ls /c/Users/ax137/anaconda3/bin/python*)",
+      "Bash(/e/Users/ax137/anaconda3/envs/future/python.exe -c \"import numpy; import sklearn; import torch; print\\(''numpy:'', numpy.__version__\\); print\\(''sklearn OK''\\); print\\(''torch:'', torch.__version__\\)\")",
+      "Bash(for env:*)",
+      "Bash(do echo:*)",
+      "Bash(\"$env\" -c \"import torch; import sklearn; print\\(''has both''\\)\")",
+      "Bash(done)",
+      "Bash(PYEXE=\"/e/Users/ax137/anaconda3/envs/CS2109S/python.exe\")",
+      "Bash(\"$PYEXE\" -c \":*)",
+      "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe pipelines/experiments/run_confusion_matrix_experiment.py)",
+      "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe -c \"import sys; sys.path.insert\\(0,''e:/WorkSpave_python/CS3264-Experiment/DDI-term-project''\\); from project_paths import METRICS_DIR; print\\(METRICS_DIR\\)\")"
+    ]
+  }
+}
