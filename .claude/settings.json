@@ -13,7 +13,8 @@
       "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe -c \"import numpy, sklearn, shap; print\\(''all ok''\\)\")",
       "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe pipelines/experiments/run_comparative_analysis.py)",
       "Bash(/e/Users/ax137/anaconda3/envs/CS2109S/python.exe -c \":*)",
-      "Bash(/e/texlive/2026/bin/windows/pdflatex -interaction=nonstopmode CS3264_Final_Report.tex)"
+      "Bash(/e/texlive/2026/bin/windows/pdflatex -interaction=nonstopmode CS3264_Final_Report.tex)",
+      "Bash(cat /e/WorkSpave_python/CS3264-Experiment/DDI-term-project/artifacts/metrics/*.json)"
     ]
   }
 }

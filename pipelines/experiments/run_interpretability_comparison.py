@@ -44,7 +44,7 @@ from trdp.trdp_analysis import build_feature_names, extract_path_conditions
 
 # ── config ─────────────────────────────────────────────────────────────────
 N_ESTIMATORS = 200
-MAX_DEPTH    = 10
+MAX_DEPTH    = 20
 ALPHA        = 1.0
 SEED         = 42
 SHAP_SAMPLES = 300

@@ -15,8 +15,6 @@ RAW_DDI_TSV = ROOT_DIR / "ChCh-Miner_durgbank-chem-chem.tsv" / "ChCh-Miner_durgb
 DRUG_SMILES_JSON = ROOT_DIR / "drug_smiles.json"
 DRUG_FINGERPRINTS_NPZ = PROCESSED_DIR / "drug_fingerprints.npz"
 
-POSITIVE_SAMPLES_NPZ = PROCESSED_DIR / "positive_samples.npz"
-NEGATIVE_SAMPLES_NPZ = PROCESSED_DIR / "negative_samples.npz"
 POSITIVE_ADD_SAMPLES_NPZ = PROCESSED_DIR / "positive_add_samples.npz"
 NEGATIVE_ADD_SAMPLES_NPZ = PROCESSED_DIR / "negative_add_samples.npz"
 
@@ -30,16 +28,9 @@ Y_TEST_NPY = PROCESSED_DIR / "y_test.npy"
 RF_MODEL_PKL = MODELS_DIR / "rf_model.pkl"
 LR_MODEL_PKL = MODELS_DIR / "lr_model.pkl"
 MLP_MODEL_PTH = MODELS_DIR / "mlp.pth"
-ATTN_MODEL_PTH = MODELS_DIR / "mlp_attn.pth"
-FULL_ATTN_MODEL_PTH = MODELS_DIR / "full_mlp_attn.pth"
-BI_ATTN_MODEL_PTH = MODELS_DIR / "bi_mlp_attn.pth"
-
 LR_RESULTS_JSON = METRICS_DIR / "logistic_regression_results.json"
 RF_RESULTS_JSON = METRICS_DIR / "random_forest_results.json"
 MLP_RESULTS_JSON = METRICS_DIR / "mlp_results.json"
-ATTN_RESULTS_JSON = METRICS_DIR / "attention_results.json"
-FULL_ATTN_RESULTS_JSON = METRICS_DIR / "full_attention_results.json"
-BI_ATTN_RESULTS_JSON = METRICS_DIR / "bi_attention_results.json"
 
 SHAP_SUMMARY_PNG = FIGURES_DIR / "shap_summary.png"
 SHAP_BAR_PNG = FIGURES_DIR / "shap_bar.png"

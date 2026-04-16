@@ -44,10 +44,10 @@ train_loader  = DataLoader(train_dataset, batch_size=256, shuffle=True)
 
 # 模型定义
 class MLP(nn.Module):
-    def __init__(self, input_dim=332):
+    def __init__(self, input_dim=167):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Linear(input_dim, 256),
+            nn.Linear(input_dim, input_dim),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.Linear(256, 128),
